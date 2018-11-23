@@ -2,8 +2,10 @@ package com.palarz.mike.samodelkin
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import kotlinx.android.synthetic.main.activity_new_character.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 private const val CHARACTER_DATA_KEY = "CHARACTER_DATA_KEY"
 
@@ -24,8 +26,10 @@ class NewCharacterActivity : AppCompatActivity() {
         displayCharacterData()
 
         generateButton.setOnClickListener {
-            characterData = CharacterGenerator.generate()
-            displayCharacterData()
+            GlobalScope.launch(Dispatchers.Main){
+                characterData = fetchCharacterData()
+                displayCharacterData()
+            }
         }
     }
 

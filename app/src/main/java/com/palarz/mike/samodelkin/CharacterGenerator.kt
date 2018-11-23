@@ -1,7 +1,10 @@
 package com.palarz.mike.samodelkin
 
+import kotlinx.coroutines.*
 import java.io.Serializable
+import java.net.URL
 
+private const val CHARACTER_DATA_ENDPOINT = "https://http://chargen-api.herokuapp.com/"
 private fun <T> List<T>.rand() = shuffled().first()
 
 private fun Int.roll() = (0 until this)
@@ -34,4 +37,22 @@ object CharacterGenerator {
                                     dex = dex(),
                                     wis = wis(),
                                     str = str())
+
+    fun fromApiData(apiData: String): CharacterData{
+        val(race, name, dex, wis, str) = apiData.split(",")
+        return CharacterData(name, race, dex, wis, str)
+    }
 }
+
+fun fetchCharacterData(): Deferred<CharacterGenerator.CharacterData> {
+    return GlobalScope.async(Dispatchers.IO) {
+        val apiData = URL(CHARACTER_DATA_ENDPOINT).readText()
+        CharacterGenerator.fromApiData(apiData)
+    }
+}
+
+//suspend fun fetchCharacterData(): CharacterGenerator.CharacterData =
+//        withContext(Dispatchers.IO) {
+//            val apiData = URL(CHARACTER_DATA_ENDPOINT).readText()
+//            CharacterGenerator.fromApiData(apiData)
+//        }
